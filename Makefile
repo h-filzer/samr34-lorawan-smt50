@@ -6,9 +6,9 @@ BOARD ?= bastwan
 #PROGRAMMER ?= edbg
 TERMFLAGS=-s 115200 -p /dev/ttyACM1
 
-DEVEUI ?= 0000000000000000
-APPKEY ?= 00000000000000000000000000000000
-APPEUI ?= 0000000000000000
+DEVEUI ?= 0000000000000001
+APPKEY ?= 00000000000000000000000000000001
+APPEUI ?= 0000000000000001
 
 # This has to be the absolute path to the RIOT base directory:
 RIOTBASE ?= $(CURDIR)/../RIOT
@@ -25,7 +25,7 @@ QUIET ?= 1
 DRIVER ?= sx1276
 LORA_REGION ?= EU868
 
-#USEPKG += semtech-loramac
+USEPKG += semtech-loramac
 USEPKG += cayenne-lpp
 # Modules to include:
 #USEMODULE += shell

@@ -39,66 +39,91 @@
 #include "periph/gpio.h"
 #include "ztimer/periph_rtc.h"
 #include "periph/rtc.h"
+#include "lorawan.h"
+#include "cayenne_lpp.h"
+#include "periph/adc.h"
+
+#include "smt50.h"
+
+#define ENABLE_DEBUG 1
+#include "debug.h"
 
 /* Messages are sent every 20s to respect the duty cycle on each channel */
-#define PERIOD (5U)
+#define SLEEP_DURATION (300U)
+
+static bool initializedADC = false;
 
 void rtc_cb(void *arg)
 {
     (void)arg;
+    DEBUG_PUTS("Timeer Wakeup");
 }
 
-void _prepare_next_alarm(void)
+void sleepUtilNextAlarm(void)
 {
 
-    // ztimer_t timeout = {.callback = rtc_cb, .arg = "Hello ztimer!"};
-    // ztimer_set(ZTIMER_MSEC, &timeout, 5000);
-    ztimer_periph_rtc_init(ZTIMER_MSEC);
-    struct tm time;
-    rtc_get_time(&time);
-    /* set initial alarm */
-    time.tm_sec += PERIOD;
-    mktime(&time);
-    rtc_set_alarm(&time, rtc_cb, NULL);
-    pm_blocker_t blocker = pm_get_blocker();
-    printf("Blocker val %ld , pwr modeblocker: %hhn ", blocker.val_u32, blocker.val_u8);
+    ztimer_t timeout = {.callback = rtc_cb, .arg = "Hello ztimer!"};
+
+    ztimer_set(ZTIMER_MSEC, &timeout, SLEEP_DURATION * 1000);
+    //ztimer_periph_rtc_init(ZTIMER_MSEC);
+    // struct tm time;
+    // rtc_get_time(&time);
+    // /* set initial alarm */
+    // time.tm_sec += PERIOD;
+    // mktime(&time);
+    // rtc_set_alarm(&time, rtc_cb, NULL);
+    // pm_blocker_t blocker = pm_get_blocker();
+    // DEBUG_PRINT("Blocker val %ld , pwr modeblocker: %hhn ", blocker.val_u32, blocker.val_u8);
 
     gpio_clear(TCXO_PWR_PIN);
+    DEBUG_PUTS("Go to sleep...............");
     pm_set(1);
-    puts("Wakeup after ");
+    DEBUG_PUTS("Wakeup after ");
     gpio_set(TCXO_PWR_PIN);
+    ztimer_spin(ZTIMER_MSEC, 300);
 }
 
-void _send_message(void)
+void gatherSensorData(cayenne_lpp_t *lpp)
 {
-}
-
-void sender(void)
-{
-
-    ztimer_periph_rtc_init(ZTIMER_MSEC);
-    ztimer_spin(ZTIMER_MSEC, 3000);
-
-    while (1)
+    if (!initializedADC)
     {
-        //  gpio_set(TCXO_PWR_PIN);
-        /* Trigger the message send */
-
-        puts("Try Sending.....");
-        _send_message();
-        /* Schedule the next wake-up alarm */
-        puts("Prepare alarm.....");
-        _prepare_next_alarm();
-        puts("Alarm prepared.....");
+        for (int line = 1; line <= 2; line++)
+        {
+            if (adc_init(ADC_LINE(line)) < 0)
+            {
+                DEBUG_PRINT("Initialization of ADC_LINE(%u) failed\n", line);
+                return;
+            }
+        }
+        initializedADC = true;
     }
+
+    float vBatt = measureVbatt(ADC_LINE(0));
+    float soilHumidity = measureSoilHumidity(ADC_LINE(1));
+    float soilTemperature = measureSoilTemperature(ADC_LINE(2));
+    DEBUG_PRINT("Vbatt: %f\nHum: %f\nTemp: %f\n", vBatt, soilHumidity, soilTemperature);
+    cayenne_lpp_add_analog_input(lpp, 1, vBatt);
+    cayenne_lpp_add_relative_humidity(lpp, 3, soilHumidity);
+    cayenne_lpp_add_temperature(lpp, 5, soilTemperature);
 }
 
+semtech_loramac_t loramac;
 int main(void)
 {
 
-    puts("=====================================");
-    puts(CONFIG_LORAMAC_DEV_EUI_DEFAULT);
+    DEBUG_PUTS("=====================================");
+    DEBUG_PUTS(CONFIG_LORAMAC_DEV_EUI_DEFAULT);
+    ztimer_init();
     pm_unblock(0);
-    sender();
+    joinNetwork(&loramac, 3);
+
+    while (true)
+    {
+        cayenne_lpp_t lpp = {0};
+        gatherSensorData(&lpp);
+        sendData(&loramac, &lpp);
+        sleepUtilNextAlarm();
+    }
+
     return 0;
 }

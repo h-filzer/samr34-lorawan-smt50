@@ -9,8 +9,6 @@
 #define ADC_SAMPLES 100
 #define ADC_VREF 3.3
 
-void gatherSensorData(cayenne_lpp_t *lpp);
-
 float measureSoilTemperature(adc_t line);
 
 float measureVbatt(adc_t line);
