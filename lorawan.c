@@ -24,10 +24,13 @@ void setupLoraParams(semtech_loramac_t *loramac)
     fmt_hex_bytes(deveui, CONFIG_LORAMAC_DEV_EUI_DEFAULT);
     fmt_hex_bytes(appeui, CONFIG_LORAMAC_APP_EUI_DEFAULT);
     fmt_hex_bytes(appkey, CONFIG_LORAMAC_APP_KEY_DEFAULT);
-
+    DEBUG_PRINT("Confirmation mode: %d", semtech_loramac_get_tx_mode(loramac));
+    semtech_loramac_set_tx_mode(loramac, 0);
     if (!loramacInitialized)
     {
         semtech_loramac_init(loramac);
+        // Disable Confirmation from Network
+
         semtech_loramac_set_dr(loramac, INITIAL_DATARATE);
         semtech_loramac_set_deveui(loramac, deveui);
         semtech_loramac_set_appeui(loramac, appeui);
