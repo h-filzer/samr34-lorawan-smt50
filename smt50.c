@@ -16,7 +16,7 @@ float measure(adc_t line)
 
 float measureSoilHumidity(adc_t line)
 {
-    float normalizedSoilHumidity = ((measure(line) * 50) / 3.0);
+    float normalizedSoilHumidity = ((measure(line) * 50.0) / 3.0);
     return normalizedSoilHumidity;
 }
 
@@ -34,4 +34,3 @@ float measureSoilTemperature(adc_t line)
     //printf("Converted %f\n", normalizedVoltage);
     return normalizedHumidity;
 }
-
