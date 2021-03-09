@@ -122,7 +122,7 @@ Wire Wire Line
 Wire Wire Line
 	4850 2150 4900 2150
 Text Label 3950 2350 0    50   ~ 0
-D3
+D6
 Wire Wire Line
 	3950 2350 4100 2350
 Wire Wire Line
@@ -284,9 +284,9 @@ Wire Wire Line
 Wire Wire Line
 	5100 1500 4900 1500
 Text Label 5150 1600 0    50   ~ 0
-Temp
+A1
 Text Label 5150 1700 0    50   ~ 0
-Moisture
+A2
 Wire Wire Line
 	5150 1600 4900 1600
 Wire Wire Line
@@ -294,9 +294,9 @@ Wire Wire Line
 Text Notes 4600 1500 2    50   ~ 0
 brown
 Text Notes 4600 1600 2    50   ~ 0
-green
+green - temp
 Text Notes 4600 1700 2    50   ~ 0
-yellow
+yellow - moisture
 Text Notes 4550 1800 2    50   ~ 0
 white
 Text Label 6900 1750 2    50   ~ 0

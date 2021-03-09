@@ -48,10 +48,18 @@
 #define ENABLE_DEBUG 1
 #include "debug.h"
 
-/* Messages are sent every 20s to respect the duty cycle on each channel */
+/* Messages are sent every 300s to respect the duty cycle on each channel */
 #define SLEEP_DURATION (300U)
 
+#define SENSOR_SWITCH GPIO_PIN(PB, 22)
+
 static bool initializedADC = false;
+
+void initSensorSwitch(void)
+{
+    gpio_init(SENSOR_SWITCH, GPIO_OUT);
+    gpio_clear(SENSOR_SWITCH);
+}
 
 void rtc_cb(void *arg)
 {
@@ -87,7 +95,7 @@ void gatherSensorData(cayenne_lpp_t *lpp)
 {
     if (!initializedADC)
     {
-        for (int line = 1; line <= 2; line++)
+        for (int line = 0; line <= 2; line++)
         {
             if (adc_init(ADC_LINE(line)) < 0)
             {
@@ -97,10 +105,14 @@ void gatherSensorData(cayenne_lpp_t *lpp)
         }
         initializedADC = true;
     }
+    //Enable Sensor and wait to settle
+    gpio_set(SENSOR_SWITCH);
+    ztimer_spin(ZTIMER_MSEC, 3000);
 
     float vBatt = measureVbatt(ADC_LINE(0));
-    float soilHumidity = measureSoilHumidity(ADC_LINE(1));
-    float soilTemperature = measureSoilTemperature(ADC_LINE(2));
+    float soilHumidity = measureSoilHumidity(ADC_LINE(2));
+    float soilTemperature = measureSoilTemperature(ADC_LINE(1));
+    gpio_clear(SENSOR_SWITCH);
     DEBUG_PRINT("Vbatt: %f\nHum: %f\nTemp: %f\n", vBatt, soilHumidity, soilTemperature);
     cayenne_lpp_add_analog_input(lpp, 1, vBatt);
     cayenne_lpp_add_relative_humidity(lpp, 3, soilHumidity);
@@ -113,6 +125,7 @@ int main(void)
 
     DEBUG_PUTS("=====================================");
     DEBUG_PUTS(CONFIG_LORAMAC_DEV_EUI_DEFAULT);
+    initSensorSwitch();
     ztimer_init();
     pm_unblock(0);
     joinNetwork(&loramac, 3);

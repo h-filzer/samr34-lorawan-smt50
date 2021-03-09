@@ -31,6 +31,5 @@ float measureVbatt(adc_t line)
 float measureSoilTemperature(adc_t line)
 {
     float normalizedHumidity = (measure(line) - 0.5) * 100;
-    //printf("Converted %f\n", normalizedVoltage);
     return normalizedHumidity;
 }
