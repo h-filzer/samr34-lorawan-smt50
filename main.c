@@ -61,6 +61,19 @@ void initSensorSwitch(void)
     gpio_clear(SENSOR_SWITCH);
 }
 
+void prepareSleep(void)
+{
+    gpio_clear(TCXO_PWR_PIN);
+    gpio_clear(SENSOR_SWITCH);
+}
+
+void postSleep(void)
+{
+    gpio_set(TCXO_PWR_PIN);
+    gpio_set(SENSOR_SWITCH);
+    ztimer_spin(ZTIMER_MSEC, 300);
+}
+
 void rtc_cb(void *arg)
 {
     (void)arg;
@@ -71,24 +84,9 @@ void sleepUtilNextAlarm(void)
 {
 
     ztimer_t timeout = {.callback = rtc_cb, .arg = "Hello ztimer!"};
-
     ztimer_set(ZTIMER_MSEC, &timeout, SLEEP_DURATION * 1000);
-    //ztimer_periph_rtc_init(ZTIMER_MSEC);
-    // struct tm time;
-    // rtc_get_time(&time);
-    // /* set initial alarm */
-    // time.tm_sec += PERIOD;
-    // mktime(&time);
-    // rtc_set_alarm(&time, rtc_cb, NULL);
-    // pm_blocker_t blocker = pm_get_blocker();
-    // DEBUG_PRINT("Blocker val %ld , pwr modeblocker: %hhn ", blocker.val_u32, blocker.val_u8);
-
-    gpio_clear(TCXO_PWR_PIN);
     DEBUG_PUTS("Go to sleep...............");
     pm_set(1);
-    DEBUG_PUTS("Wakeup after ");
-    gpio_set(TCXO_PWR_PIN);
-    ztimer_spin(ZTIMER_MSEC, 300);
 }
 
 void gatherSensorData(cayenne_lpp_t *lpp)
@@ -105,14 +103,10 @@ void gatherSensorData(cayenne_lpp_t *lpp)
         }
         initializedADC = true;
     }
-    //Enable Sensor and wait to settle
-    gpio_set(SENSOR_SWITCH);
-    ztimer_spin(ZTIMER_MSEC, 3000);
 
     float vBatt = measureVbatt(ADC_LINE(0));
     float soilHumidity = measureSoilHumidity(ADC_LINE(2));
     float soilTemperature = measureSoilTemperature(ADC_LINE(1));
-    gpio_clear(SENSOR_SWITCH);
     DEBUG_PRINT("Vbatt: %f\nHum: %f\nTemp: %f\n", vBatt, soilHumidity, soilTemperature);
     cayenne_lpp_add_analog_input(lpp, 1, vBatt);
     cayenne_lpp_add_relative_humidity(lpp, 3, soilHumidity);
@@ -133,10 +127,12 @@ int main(void)
     while (true)
     {
         cayenne_lpp_t lpp = {0};
+        postSleep();
         gatherSensorData(&lpp);
         sendData(&loramac, &lpp);
+        prepareSleep();
         sleepUtilNextAlarm();
-    }
+        }
 
     return 0;
 }

@@ -6,6 +6,8 @@
 float measure(adc_t line)
 {
     float measurements = 0.0;
+    //first measurement is erronious
+    adc_sample(line, ADC_RES);
     for (int i = 0; i < ADC_SAMPLES; i++)
     {
         int32_t sample = adc_sample(line, ADC_RES);
