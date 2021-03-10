@@ -1,8 +1,7 @@
-#ifndef SMT50_H
-#define SMT50_H
+#ifndef _SENSORS_H
+#define _SENSORS_H
 
 #include "periph/adc.h"
-#include "cayenne_lpp.h"
 
 #define ADC_RES ADC_RES_12BIT
 #define ADC_SAMPLE_DELAY (50u) /* 500 ms */
@@ -16,4 +15,4 @@ float measureVbatt(adc_t line);
 float measureSoilHumidity(adc_t line);
 
 
-#endif /* STM50_H */
+#endif /* _SENSORS_H */

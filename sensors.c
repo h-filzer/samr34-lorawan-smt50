@@ -1,6 +1,5 @@
-#include "smt50.h"
+#include "sensors.h"
 
-#include "periph/adc.h"
 #include "analog_util.h"
 
 float measure(adc_t line)

@@ -21,29 +21,18 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <time.h>
 
-#include "msg.h"
-#include "thread.h"
 #include "fmt.h"
 
-#include "periph/rtc.h"
-
-// #include "net/loramac.h"
-// #include "semtech_loramac.h"
 #include "pm_layered.h"
 #include "board.h"
 #include "ztimer.h"
-#include "shell.h"
-#include "shell_commands.h"
 #include "periph/gpio.h"
-#include "ztimer/periph_rtc.h"
-#include "periph/rtc.h"
 #include "lorawan.h"
 #include "cayenne_lpp.h"
 #include "periph/adc.h"
 
-#include "smt50.h"
+#include "sensors.h"
 
 #define ENABLE_DEBUG 1
 #include "debug.h"
@@ -77,7 +66,7 @@ void postSleep(void)
 void rtc_cb(void *arg)
 {
     (void)arg;
-    DEBUG_PUTS("Timeer Wakeup");
+    DEBUG_PUTS("Wakeup from sleep...");
 }
 
 void sleepUtilNextAlarm(void)
@@ -85,7 +74,7 @@ void sleepUtilNextAlarm(void)
 
     ztimer_t timeout = {.callback = rtc_cb, .arg = "Hello ztimer!"};
     ztimer_set(ZTIMER_MSEC, &timeout, SLEEP_DURATION * 1000);
-    DEBUG_PUTS("Go to sleep...............");
+    DEBUG_PRINT("Go to sleep for %u Seconds", SLEEP_DURATION * 1000);
     pm_set(1);
 }
 
@@ -132,7 +121,7 @@ int main(void)
         sendData(&loramac, &lpp);
         prepareSleep();
         sleepUtilNextAlarm();
-        }
+    }
 
     return 0;
 }

@@ -27,19 +27,10 @@ LORA_REGION ?= EU868
 
 USEPKG += semtech-loramac
 USEPKG += cayenne-lpp
-# Modules to include:
-#USEMODULE += shell
-#USEMODULE += shell_commands
-#USEMODULE += ps
-#USEMODULE += xtimer
+
 USEMODULE += ztimer 
-USEMODULE += ztimer_usec
 USEMODULE += ztimer_msec 
-#USEMODULE += ztimer_sec 
-USEMODULE += ztimer_periph_rtt
-USEMODULE += ztimer_periph_rtc
 USEMODULE += pm_layered
-USEMODULE += periph_rtc
 USEMODULE += periph_gpio
 USEMODULE += periph_adc
 USEMODULE += analog_util
