@@ -37,8 +37,8 @@
 #define ENABLE_DEBUG 1
 #include "debug.h"
 
-/* Messages are sent every 300s to respect the duty cycle on each channel */
-#define SLEEP_DURATION (300U)
+/* Messages are sent every SLEEP_DURATION to respect the duty cycle on each channel */
+#define SLEEP_DURATION (20U)
 
 #define SENSOR_SWITCH GPIO_PIN(PB, 22)
 
@@ -52,12 +52,16 @@ void initSensorSwitch(void)
 
 void prepareSleep(void)
 {
+    gpio_clear(TX_OUTPUT_SEL_PIN);
+    gpio_clear(TX_SWITCH_PWR_PIN);
     gpio_clear(TCXO_PWR_PIN);
     gpio_clear(SENSOR_SWITCH);
 }
 
 void postSleep(void)
 {
+    gpio_set(TX_OUTPUT_SEL_PIN);
+    gpio_set(TX_SWITCH_PWR_PIN);
     gpio_set(TCXO_PWR_PIN);
     gpio_set(SENSOR_SWITCH);
     ztimer_spin(ZTIMER_MSEC, 300);
@@ -74,7 +78,7 @@ void sleepUtilNextAlarm(void)
 
     ztimer_t timeout = {.callback = rtc_cb, .arg = "Hello ztimer!"};
     ztimer_set(ZTIMER_MSEC, &timeout, SLEEP_DURATION * 1000);
-    DEBUG_PRINT("Go to sleep for %u Seconds", SLEEP_DURATION * 1000);
+    DEBUG_PRINT("Go to sleep for %u Seconds\n", SLEEP_DURATION);
     pm_set(1);
 }
 
