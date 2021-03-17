@@ -1,23 +1,3 @@
-/*
- * Copyright (C) 2018 Inria
- *
- * This file is subject to the terms and conditions of the GNU Lesser
- * General Public License v2.1. See the file LICENSE in the top level
- * directory for more details.
- */
-
-/**
- * @ingroup     examples
- * @{
- *
- * @file
- * @brief       Example demonstrating the use of LoRaWAN with RIOT
- *
- * @author      Alexandre Abadie <alexandre.abadie@inria.fr>
- *
- * @}
- */
-
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>

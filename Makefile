@@ -36,6 +36,7 @@ USEMODULE += periph_adc
 USEMODULE += analog_util
 USEMODULE += fmt
 USEMODULE += cayenne-lpp
+USEMODULE += stdio_uart
 #USEMODULE += printf_float
 USEMODULE += $(DRIVER)
 

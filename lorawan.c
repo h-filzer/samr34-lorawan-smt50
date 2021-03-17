@@ -30,6 +30,8 @@ void setupLoraParams(semtech_loramac_t *loramac)
         // Disable Confirmation from Network
         semtech_loramac_set_tx_mode(loramac, LORAMAC_TX_UNCNF);
         semtech_loramac_set_dr(loramac, INITIAL_DATARATE);
+        //semtech_loramac_set_adr(loramac, true);
+        //semtech_loramac_set_tx_power(loramac, 1);
         semtech_loramac_set_deveui(loramac, deveui);
         semtech_loramac_set_appeui(loramac, appeui);
         semtech_loramac_set_appkey(loramac, appkey);
