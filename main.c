@@ -94,6 +94,7 @@ int main(void)
     DEBUG_PUTS(CONFIG_LORAMAC_DEV_EUI_DEFAULT);
     initSensorSwitch();
     ztimer_init();
+    ztimer_spin(ZTIMER_MSEC, 300);
     pm_unblock(0);
     joinNetwork(&loramac, 3);
 
