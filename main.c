@@ -96,7 +96,7 @@ int main(void)
     ztimer_init();
     ztimer_spin(ZTIMER_MSEC, 300);
     pm_unblock(0);
-   // joinNetwork(&loramac, 3);
+    joinNetwork(&loramac, 3);
 
     while (true)
     {
