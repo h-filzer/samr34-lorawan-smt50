@@ -66,7 +66,7 @@ void gatherSensorData(cayenne_lpp_t *lpp)
 {
     if (!initializedADC)
     {
-        for (int line = 0; line <= 2; line++)
+        for (u_int8_t line = 0; line < ADC_NUMOF; line++)
         {
             if (adc_init(ADC_LINE(line)) < 0)
             {
@@ -96,7 +96,7 @@ int main(void)
     ztimer_init();
     ztimer_spin(ZTIMER_MSEC, 300);
     pm_unblock(0);
-    joinNetwork(&loramac, 3);
+   // joinNetwork(&loramac, 3);
 
     while (true)
     {
