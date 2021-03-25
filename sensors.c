@@ -31,7 +31,7 @@ float measureVbatt(adc_t line)
 
 float measureSoilTemperature(adc_t line)
 {
-    printf("Converted %f\n", measure(line));
-    float normalizedHumidity = (measure(line) - 0.55) * 100;
+    //printf("Converted %f\n", measure(line));
+    float normalizedHumidity = (measure(line) - 0.541) * 100;
     return normalizedHumidity;
 }

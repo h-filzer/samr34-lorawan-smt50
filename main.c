@@ -14,11 +14,11 @@
 
 #include "sensors.h"
 
-#define ENABLE_DEBUG 1
+#define ENABLE_DEBUG 0
 #include "debug.h"
 
 /* Messages are sent every SLEEP_DURATION to respect the duty cycle on each channel */
-#define SLEEP_DURATION (20U)
+#define SLEEP_DURATION (600U)
 
 #define SENSOR_SWITCH GPIO_PIN(PB, 22)
 
@@ -58,7 +58,7 @@ void sleepUtilNextAlarm(void)
 
     ztimer_t timeout = {.callback = rtc_cb, .arg = "Hello ztimer!"};
     ztimer_set(ZTIMER_MSEC, &timeout, SLEEP_DURATION * 1000);
-    DEBUG_PRINT("Go to sleep for %u Seconds\n", SLEEP_DURATION);
+    DEBUG("Go to sleep for %u Seconds\n", SLEEP_DURATION);
     pm_set(1);
 }
 
@@ -70,7 +70,7 @@ void gatherSensorData(cayenne_lpp_t *lpp)
         {
             if (adc_init(ADC_LINE(line)) < 0)
             {
-                DEBUG_PRINT("Initialization of ADC_LINE(%u) failed\n", line);
+                DEBUG("Initialization of ADC_LINE(%u) failed\n", line);
                 return;
             }
         }
@@ -80,7 +80,7 @@ void gatherSensorData(cayenne_lpp_t *lpp)
     float vBatt = measureVbatt(ADC_LINE(0));
     float soilHumidity = measureSoilHumidity(ADC_LINE(2));
     float soilTemperature = measureSoilTemperature(ADC_LINE(1));
-    DEBUG_PRINT("Vbatt: %f\nHum: %f\nTemp: %f\n", vBatt, soilHumidity, soilTemperature);
+    DEBUG("Vbatt: %f\nHum: %f\nTemp: %f\n", vBatt, soilHumidity, soilTemperature);
     cayenne_lpp_add_analog_input(lpp, 1, vBatt);
     cayenne_lpp_add_relative_humidity(lpp, 3, soilHumidity);
     cayenne_lpp_add_temperature(lpp, 5, soilTemperature);

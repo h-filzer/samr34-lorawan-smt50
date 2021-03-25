@@ -4,7 +4,7 @@ APPLICATION = Rak4260-bastwan-lora-smt50
 # If no BOARD is found in the environment, use this default:
 BOARD ?= bastwan
 #PROGRAMMER ?= edbg
-TERMFLAGS=-s 115200 -p /dev/ttyACM0
+TERMFLAGS=-s 115200 -p /dev/ttyACM1
 
 DEVEUI ?= 0000000000000000
 APPKEY ?= 00000000000000000000000000000000
